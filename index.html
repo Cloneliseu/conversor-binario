@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTC — Conversor Binário</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0b0e14;
+            --surface: #131720;
+            --border: #1e2535;
+            --accent: #4ade80;
+            --accent2: #38bdf8;
+            --accent3: #f472b6;
+            --warn: #facc15;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --reg: #c084fc;
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            min-height: 100vh;
+            padding: 0 16px 60px;
+        }
+
+        header {
+            text-align: center;
+            padding: 48px 0 32px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 36px;
+        }
+
+        .logo-tag {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-family: var(--mono);
+            font-size: clamp(22px, 5vw, 38px);
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: #fff;
+        }
+
+        header h1 span {
+            color: var(--accent);
+        }
+
+        header p {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .field {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px;
+            font-family: var(--mono);
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 15px;
+            padding: 10px 14px;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        button {
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 700;
+            padding: 9px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity .15s, transform .1s;
+        }
+
+        button:hover {
+            opacity: .85;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-green {
+            background: var(--accent);
+            color: #0b0e14;
+        }
+
+        .btn-blue {
+            background: var(--accent2);
+            color: #0b0e14;
+        }
+
+        .btn-pink {
+            background: var(--accent3);
+            color: #0b0e14;
+        }
+
+        .btn-yellow {
+            background: var(--warn);
+            color: #0b0e14;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .output {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 14px;
+            font-family: var(--mono);
+            font-size: 13px;
+            line-height: 1.8;
+            min-height: 54px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .output:empty::after {
+            content: '—';
+            color: var(--muted);
+        }
+
+        .register {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .reg-name {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--reg);
+            font-weight: 700;
+            min-width: 30px;
+        }
+
+        .bit-group {
+            display: flex;
+            gap: 2px;
+        }
+
+        .bit {
+            width: 18px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 700;
+            transition: background .2s, color .2s;
+        }
+
+        .bit-1 {
+            background: #1a3a2a;
+            color: var(--accent);
+        }
+
+        .bit-0 {
+            background: #1a1f2e;
+            color: var(--muted);
+        }
+
+        .bit-sep {
+            width: 6px;
+        }
+
+        .log-wrap {
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 7px 12px;
+            border-left: 2px solid var(--border);
+            margin-bottom: 6px;
+            font-family: var(--mono);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .log-entry.add {
+            border-color: var(--accent);
+        }
+
+        .log-entry.sub {
+            border-color: var(--accent3);
+        }
+
+        .log-entry.and {
+            border-color: var(--accent2);
+        }
+
+        .log-entry.or {
+            border-color: var(--warn);
+        }
+
+        .log-entry.xor {
+            border-color: #a78bfa;
+        }
+
+        .log-entry.not {
+            border-color: var(--muted);
+        }
+
+        .log-entry.conv {
+            border-color: var(--accent2);
+        }
+
+        .kw {
+            color: var(--accent2);
+        }
+
+        .val {
+            color: var(--accent);
+        }
+
+        .reg-kw {
+            color: var(--reg);
+        }
+
+        .cmt {
+            color: var(--muted);
+        }
+
+        .flags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .flag {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 10px;
+            min-width: 44px;
+        }
+
+        .flag-name {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .flag-val {
+            font-family: var(--mono);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .flag-val.on {
+            color: var(--accent);
+        }
+
+        .flag-val.off {
+            color: var(--border);
+        }
+
+        .footer {
+            margin-top: 60px;
+            border-top: 1px solid var(--border);
+            padding: 36px 0 48px;
+            text-align: center;
+        }
+
+        .footer-brand {
+            font-family: var(--mono);
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .footer-brand span {
+            color: var(--accent);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .footer-links a {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 13px;
+            padding: 7px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: color .2s, border-color .2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .footer-links a svg {
+            width: 15px;
+            height: 15px;
+            fill: currentColor;
+        }
+
+        .footer-copy {
+            font-size: 11px;
+            color: var(--border);
+            font-family: var(--mono);
+        }
+
+        .footer-copy span {
+            color: var(--muted);
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-family: var(--mono);
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin: 36px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- HEADER -->
+        <header>
+            <div class="logo-tag">Assembly</div>
+            <h1>CLONERTECH<span>_</span>CONVERSOR</h1>
+            <p>Conversor Binário · Operações aritméticas</p>
+        </header>
+
+        <!-- CONVERSOR -->
+        <div class="section-label">01 — Conversor</div>
+        <div class="card">
+            <div class="card-title">Binário - Decimal / Decimal - Binário</div>
+            <div class="field">
+                <label>Valor (Binário ou Decimal)</label>
+                <input type="text" id="inp-conv" placeholder="Ex: 1011  ou  11" oninput="converterAuto()">
+            </div>
+            <div class="output" id="out-conv"></div>
+            <div class="register" id="reg-ax-conv"></div>
+        </div>
+
+        <!-- OPERAÇÕES ARITMÉTICAS -->
+        <div class="section-label">02 — Aritmética</div>
+        <div class="card">
+            <div class="card-title">ADD / SUB / MUL / DIV — Operações aritméticas</div>
+            <div class="grid-2">
+                <div class="field">
+                    <label>Operando A (binário)</label>
+                    <input type="text" id="arith-a" placeholder="Ex: 1011">
+                </div>
+                <div class="field">
+                    <label>Operando B (binário)</label>
+                    <input type="text" id="arith-b" placeholder="Ex: 0110">
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn-green" onclick="opArith('ADD')">ADD</button>
+                <button class="btn-pink" onclick="opArith('SUB')">SUB</button>
+                <button class="btn-blue" onclick="opArith('MUL')">MUL</button>
+                <button class="btn-yellow" onclick="opArith('DIV')">DIV</button>
+            </div>
+            <div class="output" id="out-arith"></div>
+            <div class="register" id="reg-arith"></div>
+            <div class="flags" id="flags-arith"></div>
+        </div>
+
+        <!-- LOG -->
+        <div class="section-label">03 — Log de Instruções</div>
+        <div class="card">
+            <div class="card-title">Histórico de execução</div>
+            <div class="log-wrap">
+                <div id="log-entries"><span style="color:var(--muted);font-family:var(--mono);font-size:12px;">Nenhuma
+                        instrução executada ainda.</span></div>
+            </div>
+            <div class="btn-row" style="margin-top:14px">
+                <button class="btn-ghost" onclick="limparLog()">Limpar log</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER CLONERTECH -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-brand">Cloner<span>Tech</span></div>
+            <div class="footer-links">
+                <a href="https://github.com/ClonerTech" target="_blank">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+                    </svg>
+                    github.com/ClonerTech
+                </a>
+                <a href="mailto:fe353396@gmail.com">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
+                    </svg>
+                    fe353396@gmail.com
+                </a>
+            </div>
+            <div class="footer-copy">© <span>2026 ClonerTech</span> · Todos os direitos reservados</div>
+        </div>
+    </footer>
+
+    <script>
+        /* ─────────────────────────────────────────────
+           UTILIDADES
+        ───────────────────────────────────────────── */
+        function pad16(n) { return n.toString(2).padStart(16, '0'); }
+        function isBin(s) { return /^[01]+$/.test(s.trim()); }
+        function isDec(s) { return /^\d+$/.test(s.trim()); }
+
+        function renderRegister(containerId, label, value16bit) {
+            const c = document.getElementById(containerId);
+            const bits = pad16(value16bit).split('');
+            let html = `<span class="reg-name">${label}</span><div class="bit-group">`;
+            bits.forEach((b, i) => {
+                if (i === 8) html += `<div class="bit bit-sep"></div>`;
+                html += `<div class="bit ${b === '1' ? 'bit-1' : 'bit-0'}">${b}</div>`;
+            });
+            html += `</div>`;
+            c.innerHTML = html;
+        }
+
+        function renderFlags(containerId, zf, sf, cf) {
+            const c = document.getElementById(containerId);
+            c.innerHTML = `
+        <div class="flag"><span class="flag-name">ZF</span><span class="flag-val ${zf ? 'on' : 'off'}">${zf ? 1 : 0}</span></div>
+        <div class="flag"><span class="flag-name">SF</span><span class="flag-val ${sf ? 'on' : 'off'}">${sf ? 1 : 0}</span></div>
+        <div class="flag"><span class="flag-name">CF</span><span class="flag-val ${cf ? 'on' : 'off'}">${cf ? 1 : 0}</span></div>
+    `;
+        }
+
+        let logCount = 0;
+        function addLog(tipo, html) {
+            logCount++;
+            const entries = document.getElementById('log-entries');
+            if (logCount === 1) entries.innerHTML = '';
+            const d = document.createElement('div');
+            d.className = `log-entry ${tipo}`;
+            d.innerHTML = html;
+            entries.prepend(d);
+        }
+
+        function limparLog() {
+            logCount = 0;
+            document.getElementById('log-entries').innerHTML =
+                '<span style="color:var(--muted);font-family:var(--mono);font-size:12px;">Log limpo.</span>';
+        }
+
+        /* ─────────────────────────────────────────────
+           1. CONVERSOR AUTO
+        ───────────────────────────────────────────── */
+        function converterAuto() {
+            const val = document.getElementById('inp-conv').value.trim();
+            const out = document.getElementById('out-conv');
+            const inline = document.getElementById('conv-inline');
+
+            if (!val) {
+                out.innerHTML = '';
+                inline.innerHTML = '';
+                document.getElementById('reg-ax-conv').innerHTML = '';
+                return;
+            }
+
+            if (isBin(val)) {
+                const dec = parseInt(val, 2);
+
+                // painel Assembly detalhado
+                out.innerHTML =
+                    `<span style="color:var(--accent);font-weight:700;">${dec}</span>` +
+                    `<span style="color:var(--muted);"> decimal</span>`;
+
+            } else if (isDec(val)) {
+                const n = parseInt(val);
+                const bin = n.toString(2);
+
+                // painel Assembly detalhado
+                out.innerHTML =
+                    `<span style="color:var(--accent);font-weight:700;">${bin}</span>` +
+                    `<span style="color:var(--muted);"> binário</span>`;
+
+            } else {
+                inline.innerHTML = `<span style="color:var(--accent3);">Entrada inválida</span>`;
+                out.innerHTML = `<span class="cmt">; use apenas 0 e 1 (binário) ou dígitos (decimal)</span>`;
+            }
+        }
+
+        /* ─────────────────────────────────────────────
+           2. ARITMÉTICA
+        ───────────────────────────────────────────── */
+        function opArith(op) {
+            const a = document.getElementById('arith-a').value.trim();
+            const b = document.getElementById('arith-b').value.trim();
+            const out = document.getElementById('out-arith');
+
+            if (!isBin(a) || !isBin(b)) {
+                out.innerHTML = `<span class="cmt">; Erro: insere binários válidos nos dois campos</span>`; return;
+            }
+
+            const da = parseInt(a, 2), db = parseInt(b, 2);
+            let res, cf = 0, extraLine = '', symOp = '';
+
+            if (op === 'ADD') {
+                res = da + db;
+                symOp = '+';
+                if (res > 0xFFFF) { cf = 1; res = res & 0xFFFF; }
+
+            } else if (op === 'SUB') {
+                const resReal = da - db;
+                symOp = '-';
+                if (resReal < 0) {
+                    cf = 1;
+                    const comp2 = (resReal + 0x10000) & 0xFFFF;
+                    const sfN = (comp2 >> 15) & 1;
+                    const absVal = Math.abs(resReal);
+                    const absBin = absVal.toString(2).padStart(16, '0');
+                    // Passo 1: inverter todos os bits do valor absoluto
+                    const invertido = absBin.split('').map(b => b === '0' ? '1' : '0').join('');
+                    // Passo 2: somar 1
+                    const comp2Bin = comp2.toString(2).padStart(16, '0');
+
+                    out.innerHTML =
+                        `<span class="kw">MOV</span> <span class="reg-kw">AX</span>, <span class="val">${da}</span>   <span class="cmt">; AX ← ${a}b</span>\n` +
+                        `<span class="kw">SUB</span> <span class="reg-kw">AX</span>, <span class="val">${db}</span>   <span class="cmt">; AX -= ${b}b</span>\n` +
+                        `\n` +
+                        `<span class="val">Resultado: ${resReal} decimal  (negativo)</span>\n` +
+                        `<span class="cmt">───────────────────────────────────────────────────────</span>\n` +
+                        `<span class="cmt">── Como o processador guarda ${resReal} em binário ──</span>\n` +
+                        `<span class="cmt">Passo 1 — valor absoluto (${absVal}):         ${absBin}b</span>\n` +
+                        `<span class="cmt">Passo 2 — inverter os bits:           ${invertido}b</span>\n` +
+                        `<span class="cmt">Passo 3 — somar 1:                    ${comp2Bin}b</span>\n` +
+                        `<span class="cmt">───────────────────────────────────────────────────────</span>\n` +
+                        `<span class="cmt">Resultado = ${comp2Bin} binario = (CF=1)</span>`;
+
+                    renderRegister('reg-arith', 'AX', comp2);
+                    addLog('sub',
+                        `<span class="kw">SUB</span> <span class="reg-kw">AX</span>, <span class="val">${db}</span> &nbsp;` +
+                        `<span class="cmt">; ${a}b - ${b}b = ${resReal}d (negativo, CF=1)</span>`);
+                    return;
+                }
+                res = resReal;
+
+            } else if (op === 'MUL') {
+                // Em Assembly x86: MUL BX → resultado em DX:AX (32 bits)
+                // DX recebe a parte alta, AX a parte baixa
+                symOp = '×';
+                const full = da * db;
+                const ax = full & 0xFFFF;        // 16 bits baixos
+                const dx = (full >> 16) & 0xFFFF; // 16 bits altos
+                res = ax;
+                cf = dx !== 0 ? 1 : 0;           // CF=1 se resultado não cabe em AX
+                extraLine =
+                    `<span class="kw">MOV</span> <span class="reg-kw">BX</span>, <span class="val">${db}</span>    <span class="cmt">; BX ← ${b}b</span>\n` +
+                    `<span class="kw">MUL</span> <span class="reg-kw">BX</span>       <span class="cmt">; AX ← AX × BX</span>\n` +
+                    `<span class="cmt">Resultado = ${ax.toString(2)} binario (${ax} em decimal)</span>`;
+
+            } else if (op === 'DIV') {
+                symOp = '÷';
+                if (db === 0) {
+                    out.innerHTML = `<span class="cmt">; Erro: divisão por zero — BX não pode ser 0</span>`;
+                    return;
+                }
+                const quociente = Math.floor(da / db);
+                const resto = da % db;
+                res = quociente & 0xFFFF;
+                // Em x86: DIV BX → quociente em AX, resto em DX
+                extraLine =
+                    `<span class="kw">MOV</span> <span class="reg-kw">BX</span>, <span class="val">${db}</span>    <span class="cmt">; BX ← ${b}b</span>\n` +
+                    `<span class="kw">DIV</span> <span class="reg-kw">BX</span>\n` +
+                    `<span class="cmt">Resultado = ${quociente.toString(2)} binario (${quociente} em decimal)  · Resto = ${resto.toString(2)} binario(${resto} em decimal) </span>`;
+            }
+
+            const resBin = res.toString(2);
+
+            // Para ADD e SUB mantém o formato original; para MUL e DIV usa extraLine
+            if (op === 'ADD' || op === 'SUB') {
+                out.innerHTML =
+                    `<span class="kw">MOV</span> <span class="reg-kw">AX</span>, <span class="val">${da}</span>   <span class="cmt">; AX ← ${a}b</span>\n` +
+                    `<span class="kw">${op}</span> <span class="reg-kw">AX</span>, <span class="val">${db}</span>    <span class="cmt">; AX ${symOp}= ${b}b</span>\n` +
+                    `<span class="cmt">Resultado = ${resBin} binario (${res} em decimal)</span>`;
+            } else {
+                out.innerHTML =
+                    `<span class="kw">MOV</span> <span class="reg-kw">AX</span>, <span class="val">${da}</span>   <span class="cmt">; AX ← ${a}b</span>\n` +
+                    extraLine;
+            }
+
+            renderRegister('reg-arith', 'AX', res);
+
+            const clsMap = { ADD: 'add', SUB: 'sub', MUL: 'add', DIV: 'sub' };
+            addLog(clsMap[op],
+                `<span class="kw">${op}</span> <span class="reg-kw">AX</span>, <span class="val">${db}</span> &nbsp;` +
+                `<span class="cmt">; ${a}b ${symOp} ${b}b = ${resBin}b (${res}d)</span>`);
+        }
+    </script>
+</body>
+
+</html>
