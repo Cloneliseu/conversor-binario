@@ -81,4 +81,4 @@ ctc-conversor binario/
 
 Este projecto está licenciado sob a [MIT License](LICENSE) — podes usar, modificar e distribuir livremente com atribuição.
 
-*Desenvolvido por Francisco R. Elias (https://github.com/ClonerTech) · INSTIC · Angola*
+*Desenvolvido por Francisco R. Elias (https://github.com/Cloneliseu) · INSTIC · Angola*
